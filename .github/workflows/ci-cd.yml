@@ -1,0 +1,36 @@
+
+name: Secure CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    name: Validate Website
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Validate HTML file
+        run: |
+          python -c "from html.parser import HTMLParser; from pathlib import Path; p = HTMLParser(); p.feed(Path('index.html').read_text(encoding='utf-8')); p.close(); print('HTML parsing completed successfully')"
+
+      - name: Check CSS file
+        run: |
+          python -c "from pathlib import Path; p = Path('style.css'); assert p.exists() and p.stat().st_size > 0, 'CSS file missing or empty'; print('CSS file validation passed')"
+
+      - name: Check README
+        run: |
+          python -c "from pathlib import Path; p = Path('README.md'); assert p.exists() and p.stat().st_size > 0, 'README missing or empty'; print('README validation passed')"
