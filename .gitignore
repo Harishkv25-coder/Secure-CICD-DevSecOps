@@ -1,0 +1,14 @@
+# Terraform local files
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+*.tfplan
+crash.log
+crash.*.log
+
+# Keep Terraform dependency lock file
+!**/.terraform.lock.hcl
+
+# Local backup
+README-local-backup.md
