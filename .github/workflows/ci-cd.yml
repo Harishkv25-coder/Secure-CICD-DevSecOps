@@ -34,3 +34,7 @@ jobs:
       - name: Check README
         run: |
           python -c "from pathlib import Path; p = Path('README.md'); assert p.exists() and p.stat().st_size > 0, 'README missing or empty'; print('README validation passed')"
+      - name: Scan for exposed secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
