@@ -23,9 +23,10 @@ variable "bucket_name" {
 provider "aws" {
   region = var.aws_region
 }
-#checkov:skip=CKV2_AWS_62:No event consumer is required for this static website.
-#checkov:skip=CKV_AWS_144:Cross-region replication is intentionally omitted to keep this portfolio project single-region and low-cost.
 resource "aws_s3_bucket" "website" {
+  #checkov:skip=CKV2_AWS_62:No event consumer is required for this static website.
+  #checkov:skip=CKV_AWS_144:Cross-region replication is intentionally omitted to keep this portfolio project single-region and low-cost.
+
   bucket = var.bucket_name
 
   tags = {
@@ -34,10 +35,11 @@ resource "aws_s3_bucket" "website" {
     ManagedBy   = "Terraform"
   }
 }
-#checkov:skip=CKV2_AWS_62:No event consumer is required for this access-log bucket.
-#checkov:skip=CKV_AWS_144:Cross-region replication is intentionally omitted to keep this portfolio project single-region and low-cost.
-#checkov:skip=CKV_AWS_145:SSE-S3 is retained on the server access logging destination bucket for S3 log-delivery compatibility.
 resource "aws_s3_bucket" "logs" {
+  #checkov:skip=CKV2_AWS_62:No event consumer is required for this access-log bucket.
+  #checkov:skip=CKV_AWS_144:Cross-region replication is intentionally omitted to keep this portfolio project single-region and low-cost.
+  #checkov:skip=CKV_AWS_145:SSE-S3 is retained on the server access logging destination bucket for S3 log-delivery compatibility.
+
   bucket = "${var.bucket_name}-logs"
 
   tags = {
@@ -111,8 +113,9 @@ resource "aws_s3_bucket_public_access_block" "logs" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
-#checkov:skip=CKV2_AWS_65:ACLs are retained on the server access logging destination bucket to grant S3 Log Delivery permission.
 resource "aws_s3_bucket_ownership_controls" "logs" {
+  #checkov:skip=CKV2_AWS_65:ACLs are retained on the server access logging destination bucket to grant S3 Log Delivery permission.
+
   bucket = aws_s3_bucket.logs.id
 
   rule {
