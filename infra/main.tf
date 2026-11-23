@@ -23,7 +23,8 @@ variable "bucket_name" {
 provider "aws" {
   region = var.aws_region
 }
-
+#checkov:skip=CKV2_AWS_62:No event consumer is required for this static website.
+#checkov:skip=CKV_AWS_144:Cross-region replication is intentionally omitted to keep this portfolio project single-region and low-cost.
 resource "aws_s3_bucket" "website" {
   bucket = var.bucket_name
 
@@ -33,6 +34,9 @@ resource "aws_s3_bucket" "website" {
     ManagedBy   = "Terraform"
   }
 }
+#checkov:skip=CKV2_AWS_62:No event consumer is required for this access-log bucket.
+#checkov:skip=CKV_AWS_144:Cross-region replication is intentionally omitted to keep this portfolio project single-region and low-cost.
+#checkov:skip=CKV_AWS_145:SSE-S3 is retained on the server access logging destination bucket for S3 log-delivery compatibility.
 resource "aws_s3_bucket" "logs" {
   bucket = "${var.bucket_name}-logs"
 
@@ -59,7 +63,46 @@ resource "aws_s3_bucket_versioning" "logs" {
     status = "Enabled"
   }
 }
+resource "aws_s3_bucket_lifecycle_configuration" "website" {
+  bucket = aws_s3_bucket.website.id
 
+  rule {
+    id     = "cleanup-old-website-versions"
+    status = "Enabled"
+
+    filter {}
+
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+  }
+}
+resource "aws_s3_bucket_lifecycle_configuration" "logs" {
+  bucket = aws_s3_bucket.logs.id
+
+  rule {
+    id     = "expire-old-access-logs"
+    status = "Enabled"
+
+    filter {}
+
+    expiration {
+      days = 90
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 90
+    }
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+  }
+}
 resource "aws_s3_bucket_public_access_block" "logs" {
   bucket = aws_s3_bucket.logs.id
 
@@ -68,7 +111,7 @@ resource "aws_s3_bucket_public_access_block" "logs" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
-
+#checkov:skip=CKV2_AWS_65:ACLs are retained on the server access logging destination bucket to grant S3 Log Delivery permission.
 resource "aws_s3_bucket_ownership_controls" "logs" {
   bucket = aws_s3_bucket.logs.id
 
