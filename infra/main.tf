@@ -26,6 +26,8 @@ provider "aws" {
 resource "aws_s3_bucket" "website" {
   #checkov:skip=CKV2_AWS_62:No event consumer is required for this static website.
   #checkov:skip=CKV_AWS_144:Cross-region replication is intentionally omitted to keep this portfolio project single-region and low-cost.
+  #checkov:skip=CKV_AWS_145:SSE-S3 AES-256 is intentionally selected to avoid KMS costs.
+  #checkov:skip=CKV2_AWS_6:Public access is intentionally required for the S3 static website.
 
   bucket = var.bucket_name
 
@@ -158,6 +160,9 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "website" {
 }
 
 resource "aws_s3_bucket_public_access_block" "website" {
+  #checkov:skip=CKV_AWS_54:Public bucket policy is required for anonymous website object reads.
+  #checkov:skip=CKV_AWS_56:Public bucket access is intentionally required for static website hosting.
+
   bucket = aws_s3_bucket.website.id
 
   block_public_acls       = true
@@ -181,6 +186,8 @@ resource "aws_s3_bucket_website_configuration" "website" {
   }
 }
 resource "aws_s3_bucket_policy" "website" {
+  #checkov:skip=CKV_AWS_70:Wildcard principal is intentionally limited to s3:GetObject for public static website files.
+
   bucket = aws_s3_bucket.website.id
 
   policy = jsonencode({
