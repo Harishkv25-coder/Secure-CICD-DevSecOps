@@ -49,7 +49,7 @@ jobs:
         run: |
           checkov -d infra --framework terraform
 
-  aws-authentication:
+    aws-authentication:
     name: Authenticate with AWS using OIDC
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -59,6 +59,19 @@ jobs:
       contents: read
 
     steps:
+      - name: Debug OIDC token claims
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const token = await core.getIDToken('sts.amazonaws.com');
+            const payload = JSON.parse(
+              Buffer.from(token.split('.')[1], 'base64url').toString()
+            );
+
+            core.info(`Issuer: ${payload.iss}`);
+            core.info(`Audience: ${payload.aud}`);
+            core.info(`Subject: ${payload.sub}`);
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -67,4 +80,5 @@ jobs:
 
       - name: Verify AWS identity
         run: aws sts get-caller-identity
-Add OIDC token diagnostics
+
+
