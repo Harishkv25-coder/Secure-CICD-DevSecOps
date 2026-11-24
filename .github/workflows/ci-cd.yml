@@ -48,6 +48,16 @@ jobs:
       - name: Scan Terraform with Checkov
         run: |
           checkov -d infra --framework terraform
+          
+      - name: Scan filesystem with Trivy
+        uses: aquasecurity/trivy-action@0.33.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+          ignore-unfixed: true
 
   aws-authentication:
     name: Authenticate with AWS using OIDC
