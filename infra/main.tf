@@ -17,7 +17,7 @@ variable "aws_region" {
 variable "bucket_name" {
   description = "Globally unique S3 bucket name"
   type        = string
-  default     = "replace-with-your-unique-bucket-name"
+  default     = "harishkv25-secure-devsecops-site-2026"
 }
 
 provider "aws" {
