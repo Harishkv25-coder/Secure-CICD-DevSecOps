@@ -75,7 +75,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "website" {
     filter {}
 
     noncurrent_version_expiration {
-      noncurrent_days = 30
+      noncurrent_days = 7
     }
 
     abort_incomplete_multipart_upload {
@@ -93,11 +93,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "logs" {
     filter {}
 
     expiration {
-      days = 90
+      days = 7
     }
 
     noncurrent_version_expiration {
-      noncurrent_days = 90
+      noncurrent_days = 7
     }
 
     abort_incomplete_multipart_upload {
