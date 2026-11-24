@@ -49,7 +49,7 @@ jobs:
         run: |
           checkov -d infra --framework terraform
 
-    aws-authentication:
+  aws-authentication:
     name: Authenticate with AWS using OIDC
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
