@@ -55,6 +55,7 @@ jobs:
           version: v0.76.2
           scan-type: fs
           scan-ref: .
+          trivyignores: .trivyignore
           scanners: vuln,secret,misconfig
           severity: HIGH,CRITICAL
           exit-code: '1'
